@@ -26,6 +26,7 @@ Account CRUD
    To delete an account use DELETE /account/accountId
 
 Transfer FUNDS
+   
    To Transfer funds  use POST /account/accountId/transact
 
    To get transactions of an account  GET  /account/accountId/transact
