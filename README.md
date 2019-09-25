@@ -13,6 +13,7 @@ To run unit tests  "mvn clean test -P dev"
 On maven installs creates a jar named "MoneyTransferSpark-<version>-jar-with-dependencies.jar", which can run as a standalone jar.
 
 Account CRUD
+
    To create Account POST /account   {"name":John Doe,mobileNumber: "89898080"} 
     TODO: check duplicate name and mobileNumber
 
