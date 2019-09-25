@@ -45,7 +45,11 @@ public class RestfulTransactService {
 		router.post("/account/*/transact", (request, response) -> {
 			
 			response.type("application/json");
+			System.out.println(request.body() +" originatingAccId  "+request.splat()[0]);
 			TransactionRekuest transaction = gson.fromJson(request.body(), TransactionRekuestImpl.class);
+			
+			System.out.println("successfull deserialization "+ transaction.getAmount() +" "+transaction.getTransactionRekuestId() +" "+transaction.getCpAccountId());
+			
 			TransactionResult result = transactionService.transfer(transaction, request.splat()[0]);
 
 			return gson.toJson(result);
