@@ -13,3 +13,28 @@ To run unit tests  "mvn clean test -P dev"
 On maven installs creates a jar named "MoneyTransferSpark-<version>-jar-with-dependencies.jar", which can run as a standalone jar.
 
 
+To create Account POST /account   {"name":John Doe,mobileNumber: "89898080"}  
+
+TODO: check duplicate name and mobileNumber
+
+To get latest account status   GET  /account/accountId
+
+To fetch all the accounts   GET /account
+(TODO: Limit number of results)
+
+To edit an account use PUT /account/accountId  (WIP)
+
+to delete an account use DELETE /account/accountId
+
+
+To Transfer funds  use POST /account/accountId/transact
+
+To get transactions of an account  GET  /account/accountId/transact
+TODO: Limit number of results
+
+To get status of a transaction  GET  /account/accountId/transact/transctionid
+
+
+
+
+
