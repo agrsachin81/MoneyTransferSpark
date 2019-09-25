@@ -27,6 +27,10 @@ import spark.Spark;
  */
 public class ITMoneyTransferAPITest {
 
+	private static final String DEBIT_FAILED = "DEBIT_FAILED";
+	private static final String AMOUNT_TRANSACTED = "amount";
+	private static final String CP_ACCOUNT_ID = "cpAccountId";
+	private static final String TRANSACTION_REKUEST_ID = "transactionRekuestId";
 	private static final String NAME_PREFIX = "john";
 	private static final String NAME = "name";
 	private static final String BALANCE = "balance";
@@ -62,18 +66,14 @@ public class ITMoneyTransferAPITest {
 	@Test
 	public void testAccountCreate() {
 		Map<String, Object> json = createAccountRetJson();
-		verifyAccountCreation(json);
+		verifyAccountDetails(json);
 	}
 
 	@Test
 	public void testAccountGet() {
 		String accId = createAccountReturnAccountId();
-
-		TestResponse response = request("GET", "/account/" + accId, "");
-		System.out.println(response.body);
-		Map<String, Object> json = response.json();
-		assertEquals(200, response.status);
-		verifyAccountCreation(json);
+		Map<String, Object> json = getAccountStatus(accId);
+		verifyAccountDetails(json);
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class ITMoneyTransferAPITest {
 	@Ignore
 	@Test
 	public void testAccountDelete() {
-
+		
 	}
 
 	@Ignore
@@ -101,25 +101,28 @@ public class ITMoneyTransferAPITest {
 		String accountId = createAccountReturnAccountId();
 		String accountId2 = createAccountReturnAccountId();
 		
-		Map<String, Object> json = transferAndRetJson(accountId, 100, accountId2);
+		Map<String, Object> json = transferAndRetJson(accountId, 30, accountId2);
+		verifyTransaction(accountId, json, accountId2,  30);
+	}
+
+	@Test
+	public void testTransactionFailedInsufficientFunds() {
+		String accountId = createAccountReturnAccountId();
+		String accountId2 = createAccountReturnAccountId();
+		
+		Map<String, Object> json = transferAndRetJson(accountId, INIT_BALANCE+0.1, accountId2);
+		verifyTransactionFailed(accountId, json, accountId2,  INIT_BALANCE+0.1, DEBIT_FAILED);
+	}
+	
+	@Ignore
+	@Test
+	public void testTransactionSuccessfulDebitCash() {
 		
 	}
 
 	@Ignore
 	@Test
-	public void testTransactionSuccessfulDebitCash() {
-
-	}
-
-	@Ignore
-	@Test
 	public void testTransactionSuccessfulCreditCash() {
-
-	}
-
-	@Ignore
-	@Test
-	public void testTransactionFailedInsufficientFunds() {
 
 	}
 	
@@ -131,6 +134,40 @@ public class ITMoneyTransferAPITest {
 		Map<String, Object> json = res.json();
 		assertEquals(200, res.status);
 		return json;
+	}
+	
+	private void verifyTransactionFailed(String origAccountId, Map<String, Object> json, String cpAccountId, double amount, String transactionStatus) {
+		int currentCounterValue = transactionCreateCounter.get();
+		assertEquals("Status is not correct", "ERROR", json.get(STATUS));
+		assertEquals("Transaction status is not correct", transactionStatus, json.get("transactionStatus"));
+		String accId = (String)json.get(ACCOUNT_ID);
+		assertNotNull(accId);
+		
+		assertEquals("origAccId", origAccountId, accId);
+		assertEquals("TransactionRek Id match ", TRAN_REK_ID_PREFIX+currentCounterValue , json.get(TRANSACTION_REKUEST_ID));
+		assertEquals("cpAccId", cpAccountId, (String)json.get(CP_ACCOUNT_ID));
+				
+		double origAccountBalance= getAccountBalance(origAccountId);
+		double cpAccountBalance = getAccountBalance(cpAccountId);
+		assertEquals("origAccountBalance ", INIT_BALANCE , origAccountBalance,0.001);
+		assertEquals("origAccountBalance ", INIT_BALANCE , cpAccountBalance,0.001);
+	}
+	
+	private void verifyTransaction(String origAccountId, Map<String, Object> json, String cpAccountId, double amount) {
+		int currentCounterValue = transactionCreateCounter.get();
+		assertEquals("Status is not correct", "SUCCESS", json.get(STATUS));
+		assertEquals("Transaction status is not correct", "DONE", json.get("transactionStatus"));
+		String accId = (String)json.get(ACCOUNT_ID);
+		assertNotNull(accId);
+		
+		assertEquals("origAccId does not match", origAccountId, accId);
+		assertEquals("TransactionRek Id do not match ", TRAN_REK_ID_PREFIX+currentCounterValue , json.get(TRANSACTION_REKUEST_ID));
+		assertEquals("cpAccId does not match ", cpAccountId, (String)json.get(CP_ACCOUNT_ID));
+				
+		double origAccountBalance= getAccountBalance(origAccountId);
+		double cpAccountBalance = getAccountBalance(cpAccountId);
+		assertEquals("origAccountBalance ", INIT_BALANCE -amount, origAccountBalance,0.001);
+		assertEquals("origAccountBalance ", INIT_BALANCE +amount, cpAccountBalance,0.001);
 	}
 
 	private Map<String, Object> createAccountRetJson() {
@@ -146,11 +183,26 @@ public class ITMoneyTransferAPITest {
 		Map<String, Object> json = createAccountRetJson();
 		return (String) json.get(ACCOUNT_ID);
 	}
+	
+	private Map<String, Object> getAccountStatus(String accId){
+		TestResponse response = request("GET", "/account/" + accId, "");
+		System.out.println(response.body);
+		Map<String, Object> json = response.json();
+		assertEquals(200, response.status);
+		return json;
+	}
+	
+	private double getAccountBalance(String accountId) {
+		
+		Map<String, Object> json = getAccountStatus(accountId);
+		
+		return (double)json.get(BALANCE);
+	}
 
 	AtomicInteger accCreateCounter = new AtomicInteger(0);
 	AtomicInteger transactionCreateCounter = new AtomicInteger(0);
 
-	private Map<String, Object> verifyAccountCreation(Map<String, Object> json) {
+	private Map<String, Object> verifyAccountDetails(Map<String, Object> json) {
 		int currentCounterValue = accCreateCounter.get();
 		assertEquals(NAME_PREFIX + currentCounterValue, json.get(NAME));
 
