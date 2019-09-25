@@ -9,5 +9,7 @@ To run integration tests  "mvn clean verify -P integration-test"
  
 
 To run unit tests  "mvn clean test -P dev"
- 
+
+On maven installs creates a jar named "MoneyTransferSpark-<version>-jar-with-dependencies.jar", which can run as a standalone jar.
+
 
