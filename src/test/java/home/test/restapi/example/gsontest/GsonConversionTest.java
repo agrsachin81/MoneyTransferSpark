@@ -10,6 +10,7 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 import home.test.api.example.moneytransfer.service.impl.MoneyTransferInMemoryServiceFactory;
+import home.test.api.example.moneytransfer.spi.enums.TransactionType;
 import home.test.api.example.moneytransfer.spi.utils.AccountRekuestImpl;
 import home.test.api.example.moneytransfer.spi.utils.TransactionRekuestImpl;
 
@@ -43,7 +44,7 @@ public class GsonConversionTest {
 		assertNotNull("JSON TO OBJ CONVERSION FAILED |" + rek + "|", transaction);
 		assertEquals("amount is not parsed", 100.0, transaction.getAmount(), 0.0000000001);
 		assertEquals("CounterParty is not parsed Correctly", "PA_2", transaction.getCpAccountId().get());
-		assertEquals("default type is not correct", null, transaction.getTransactionType());
+		assertEquals("default type is not correct", TransactionType.DEBIT_ACCOUNT, transaction.getTransactionType());
 		String expected = "abcd".intern();
 		assertEquals("transactionId not parsed", expected, transaction.getTransactionRekuestId());
 	}
