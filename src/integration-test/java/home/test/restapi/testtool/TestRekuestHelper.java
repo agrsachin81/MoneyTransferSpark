@@ -24,7 +24,7 @@ public class TestRekuestHelper {
 				connection.setRequestProperty("charset", "utf-8");
 				byte[] postData = json.getBytes(StandardCharsets.UTF_8);
 				connection.setRequestProperty("Content-Length", Integer.toString(postData.length));
-				//connection.connect();
+				// connection.connect();
 				try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
 					wr.write(postData);
 				}
