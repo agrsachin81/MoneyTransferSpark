@@ -19,32 +19,12 @@ import home.test.restapi.utils.JsonSerializer;
 
 public class MoneyTransferAPI {
 
-	private static void registerHelloWorld() {
-
-		get("/hello", (req, res) -> "Hello, world ");
-
-		post("/hello", (req, res) -> "Hello, world " + req.body());
-
-		get("/hello/:name", (req, res) -> {
-			return "Hello, " + req.params(":name");
-		});
-
-		get("/hello/*/last/*", (req, res) -> {
-			return "Hello,  " + req.splat()[1] + " " + req.splat()[0];
-		});
-
-		post("/hello/*/last", (req, res) -> {
-			return "Hello,  " + " " + req.splat()[0];
-		});
-	}
-
 	private static void registerHomePage() {
 		get("/", (rek, res) -> " WIP WIP");
 	}
 
 	public static void main(String[] args) {
 		port(1010);
-		registerHelloWorld();
 		registerHomePage();
 		SparkRestfulRouter router = new SparkRestfulRouter();
 		MoneyTransferInMemoryServiceFactory serviceAbstractFactory = MoneyTransferInMemoryServiceFactory.getInstance();
