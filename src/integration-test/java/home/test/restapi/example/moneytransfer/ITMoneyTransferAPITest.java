@@ -13,7 +13,7 @@ import static home.test.restapi.example.moneytransfer.MoneyTransferAPITestHelper
 import static home.test.restapi.example.moneytransfer.MoneyTransferAPITestHelper.verifyTransaction;
 import static home.test.restapi.example.moneytransfer.MoneyTransferAPITestHelper.verifyTransactionFailed;
 import static home.test.restapi.example.moneytransfer.MoneyTransferAPITestHelper.transferCashAndRetJson;
-import static home.test.restapi.testtool.TestRekuestHelper.request;
+import static home.test.restapi.testtool.TestRequestHelper.request;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Map;

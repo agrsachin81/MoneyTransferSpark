@@ -5,7 +5,7 @@ package home.test.restapi.example.moneytransfer.api;
 import home.test.api.example.moneytransfer.spi.AccountService;
 import home.test.api.example.moneytransfer.spi.enums.StatusResponse;
 import home.test.api.example.moneytransfer.spi.interfaces.AccountResult;
-import home.test.api.example.moneytransfer.spi.utils.AccountRekuestImpl;
+import home.test.api.example.moneytransfer.spi.utils.AccountRequestImpl;
 import home.test.api.example.moneytransfer.util.StandardResponse;
 import home.test.restapi.routing.RestfulRouter;
 import home.test.restapi.utils.JsonSerializer;
@@ -40,7 +40,7 @@ public class RestfulAccountService {
 		router.post("/account", (request, response) -> {
 			response.type("application/json");
 
-			AccountRekuestImpl account = gson.fromJson(request.body(), AccountRekuestImpl.class);
+			AccountRequestImpl account = gson.fromJson(request.body(), AccountRequestImpl.class);
 
 			AccountResult result = accountService.addAccount(account);
 			// todo:log
@@ -69,7 +69,7 @@ public class RestfulAccountService {
 		router.put("/account/"+ACC_ID_PATH_PARAM, (request, response) -> {
 			response.type("application/json");
 
-			AccountRekuestImpl toEdit = gson.fromJson(request.body(), AccountRekuestImpl.class);
+			AccountRequestImpl toEdit = gson.fromJson(request.body(), AccountRequestImpl.class);
 			AccountResult editedUser = accountService.editAccount(toEdit);
 
 			if (editedUser != null) {

@@ -13,7 +13,7 @@ import org.mockito.Mockito;
 import home.test.api.example.moneytransfer.spi.enums.AccountStatus;
 import home.test.api.example.moneytransfer.spi.enums.StatusResponse;
 import home.test.api.example.moneytransfer.spi.enums.TransactionStatus;
-import home.test.api.example.moneytransfer.spi.interfaces.AccountRekuest;
+import home.test.api.example.moneytransfer.spi.interfaces.AccountRequest;
 import home.test.api.example.moneytransfer.spi.interfaces.AccountResult;
 import home.test.api.example.moneytransfer.spi.interfaces.TransactionRekuest;
 import home.test.api.example.moneytransfer.spi.interfaces.TransactionResult;
@@ -22,7 +22,7 @@ import spark.Response;
 
 public class UnitTestHelper {
 	// TODO:make variable threadlocal to ensure when tests run in parallel
-	public static ArgumentCaptor<AccountRekuest> ACCOUNT_REKUEST_CAPTOR = ArgumentCaptor.forClass(AccountRekuest.class);
+	public static ArgumentCaptor<AccountRequest> ACCOUNT_REKUEST_CAPTOR = ArgumentCaptor.forClass(AccountRequest.class);
 
 	public static ArgumentCaptor<TransactionRekuest> TRANSFER_REKUEST_CAPTOR = ArgumentCaptor
 			.forClass(TransactionRekuest.class);
@@ -58,7 +58,7 @@ public class UnitTestHelper {
 		return rekuest;
 	}
 
-	public static void verifyAccounRekuest(AccountRekuest rekuest, String name, String mobileNumber, double balance) {
+	public static void verifyAccounRekuest(AccountRequest rekuest, String name, String mobileNumber, double balance) {
 		assertEquals("balance is incorrect parsed", balance, rekuest.getBalance(), 0.00001);
 		assertEquals("name is incorrect parsed", name, rekuest.getName());
 		assertEquals("mobileNumber is incorrect parsed", mobileNumber, rekuest.getMobileNumber());
@@ -118,7 +118,7 @@ public class UnitTestHelper {
 		return result;
 	}
 
-	public static AccountResult convertRekuestToSuccessAccountResult(String accId, AccountRekuest rekuest) {
+	public static AccountResult convertRekuestToSuccessAccountResult(String accId, AccountRequest rekuest) {
 
 		assertNotNull(rekuest);
 		AccountResult result = mock(AccountResult.class);
@@ -132,7 +132,7 @@ public class UnitTestHelper {
 		return result;
 	}
 
-	public static AccountResult convertRekuestToFailedAccountResult(AccountRekuest rekuest) {
+	public static AccountResult convertRekuestToFailedAccountResult(AccountRequest rekuest) {
 
 		assertNotNull(rekuest);
 		AccountResult result = mock(AccountResult.class);

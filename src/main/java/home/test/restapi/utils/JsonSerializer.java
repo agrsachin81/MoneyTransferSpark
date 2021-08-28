@@ -6,7 +6,7 @@ import java.lang.reflect.Type;
 import com.google.gson.JsonElement;
 
 /**
- * Need to add more methods as as when rekuired
+ * Need to add more methods as as when required
  * @author sachin
  *
  * Type JsonSerializer, created on 25-Sep-2019 at 8:01:50 pm

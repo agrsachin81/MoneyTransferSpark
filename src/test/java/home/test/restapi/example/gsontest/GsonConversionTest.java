@@ -13,8 +13,8 @@ import com.google.gson.Gson;
 
 import home.test.api.example.moneytransfer.service.impl.MoneyTransferInMemoryServiceFactory;
 import home.test.api.example.moneytransfer.spi.enums.TransactionType;
-import home.test.api.example.moneytransfer.spi.utils.AccountRekuestImpl;
-import home.test.api.example.moneytransfer.spi.utils.TransactionRekuestImpl;
+import home.test.api.example.moneytransfer.spi.utils.AccountRequestImpl;
+import home.test.api.example.moneytransfer.spi.utils.TransactionRequestImpl;
 
 public class GsonConversionTest {
 
@@ -30,7 +30,7 @@ public class GsonConversionTest {
 	public void defaultConversionTest() {
 		String rek = "{name:sachin,mobileNumber:9876544}";
 
-		AccountRekuestImpl account = gson.fromJson(rek, AccountRekuestImpl.class);
+		AccountRequestImpl account = gson.fromJson(rek, AccountRequestImpl.class);
 
 		assertNotNull("JSON TO OBJ CONVERSION FAILED |" + rek + "|", account);
 		assertNotNull("blance should be zero", account.getBalance());
@@ -41,7 +41,7 @@ public class GsonConversionTest {
 	public void transactConverionTest() {
 		String rek = "{\"amount\":100.0,\"cpAccountId\":\"PA_2\",\"transactionRekuestId\":\"abcd\"}";
 
-		TransactionRekuestImpl transaction = gson.fromJson(rek, TransactionRekuestImpl.class);
+		TransactionRequestImpl transaction = gson.fromJson(rek, TransactionRequestImpl.class);
 
 		assertNotNull("JSON TO OBJ CONVERSION FAILED |" + rek + "|", transaction);
 		assertEquals("amount is not parsed", 100.0, transaction.getAmount(), 0.0000000001);
@@ -55,7 +55,7 @@ public class GsonConversionTest {
 	public void transactConverionTestDebitCash() {
 		String rek = "{\"amount\":100.0,\"transactionType\":\"debit\",\"transactionRekuestId\":\"abcd\"}";
 
-		TransactionRekuestImpl transaction = gson.fromJson(rek, TransactionRekuestImpl.class);
+		TransactionRequestImpl transaction = gson.fromJson(rek, TransactionRequestImpl.class);
 
 		assertNotNull("JSON TO OBJ CONVERSION FAILED |" + rek + "|", transaction);
 		assertEquals("amount is not parsed", 100.0, transaction.getAmount(), 0.0000000001);

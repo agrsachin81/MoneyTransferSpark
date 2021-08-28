@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 
 import spark.utils.IOUtils;
 
-public class TestRekuestHelper {
+public class TestRequestHelper {
 	public static TestResponse request(String method, String path, String json) {
 		try {
 			URL url = new URL("http://localhost:1010" + path);
@@ -33,9 +33,7 @@ public class TestRekuestHelper {
 			}
 			String body = IOUtils.toString(connection.getInputStream());
 			return new TestResponse(connection.getResponseCode(), body);
-		} catch (
-
-		IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			fail("Sending request failed: " + e.getMessage());
 			return null;
