@@ -4,7 +4,7 @@ package home.test.restapi.example.moneytransfer.api;
 import java.util.Collection;
 
 import home.test.api.example.moneytransfer.spi.TransactionService;
-import home.test.api.example.moneytransfer.spi.interfaces.TransactionRekuest;
+import home.test.api.example.moneytransfer.spi.interfaces.TransactionRequest;
 import home.test.api.example.moneytransfer.spi.interfaces.TransactionResult;
 import home.test.api.example.moneytransfer.spi.utils.TransactionRequestImpl;
 import home.test.api.example.moneytransfer.util.StandardResponse;
@@ -45,7 +45,7 @@ public class RestfulTransactService {
 		router.post("/account/*/transact", (request, response) -> {
 			
 			response.type("application/json");
-			TransactionRekuest transaction = gson.fromJson(request.body(), TransactionRequestImpl.class);
+			TransactionRequest transaction = gson.fromJson(request.body(), TransactionRequestImpl.class);
 			TransactionResult result = transactionService.transfer(transaction, request.splat()[0]);
 
 			return gson.toJson(result);

@@ -1,7 +1,6 @@
 
 package home.test.restapi.example.moneytransfer.service;
 
-import static home.test.restapi.example.moneytransfer.api.RestfulAccountService.PATH_ACCOUNT;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -13,8 +12,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import home.test.api.example.moneytransfer.spi.TransactionService;
-import home.test.api.example.moneytransfer.spi.interfaces.AccountResult;
-import home.test.api.example.moneytransfer.spi.interfaces.TransactionRekuest;
 import home.test.api.example.moneytransfer.spi.interfaces.TransactionResult;
 import home.test.api.example.moneytransfer.util.GsonHelper;
 import home.test.restapi.example.moneytransfer.MoneyTransferAPI;
@@ -55,13 +52,13 @@ public class TestRestfulTransactionService {
 	public void testSuccessfulTransaction() {
 		Route route = ROUTER.getRegisteredRoute(HttpMethod.post, RestfulTransactService.PATH_TRANSACT);
 		assertNotNull(route);
-		String reuestJSON = "{cpAccountId:accid2,amount:534.6,transactionRekuestId:samRekId1}";
+		String requestJSON = "{cpAccountId:accid2,amount:534.6,transactionRequestId:samRekId1}";
 		AtomicReference<TransactionResult> result = new AtomicReference<>(null);
 		Mockito.when(TRANSACT_SERVICE.transfer(any(), any())).thenAnswer(invocation -> {
-			result.set(convertRekuestToSuccessTransactResult(invocation.getArgument(0),invocation.getArgument(1),"TransReferId"));
+			result.set(convertRequestToSuccessTransactResult(invocation.getArgument(0),invocation.getArgument(1),"TransReferId"));
 			return result.get();
 		});
-		verifyTransferResult(route, reuestJSON, result, "origAccId1", "accid2", 534.6,"samRekId1");
+		verifyTransferResult(route, requestJSON, result, "origAccId1", "accid2", 534.6,"samRekId1");
 	}
 
 	@Test
@@ -69,13 +66,13 @@ public class TestRestfulTransactionService {
 		// do a transaction on unknown accounts
 		Route route = ROUTER.getRegisteredRoute(HttpMethod.post, RestfulTransactService.PATH_TRANSACT);
 		assertNotNull(route);
-		String reuestJSON = "{cpAccountId:accid2,amount:124.2,transactionRekuestId:samRekId2}";
+		String requestJSON = "{cpAccountId:accid2,amount:124.2,transactionRequestId:samRekId2}";
 		AtomicReference<TransactionResult> result = new AtomicReference<>(null);
 		Mockito.when(TRANSACT_SERVICE.transfer(any(), any())).thenAnswer(invocation -> {
-			result.set(convertRekuestToFailedTransactResult(invocation.getArgument(0),invocation.getArgument(1),"TransReferId"));
+			result.set(convertRequestToFailedTransactResult(invocation.getArgument(0),invocation.getArgument(1),"TransReferId"));
 			return result.get();
 		});
-		verifyTransferResult(route, reuestJSON, result, "origAccId2", "accid2",124.2,"samRekId2");
+		verifyTransferResult(route, requestJSON, result, "origAccId2", "accid2",124.2,"samRekId2");
 	}
 	
 	@Ignore
@@ -83,13 +80,13 @@ public class TestRestfulTransactionService {
 	public void testSuccessGetTransactions() {
 		Route route = ROUTER.getRegisteredRoute(HttpMethod.post, RestfulTransactService.PATH_TRANSACT);
 		assertNotNull(route);
-		String reuestJSON = "{cpAccountId:accid2,amount:534.6,transactionRekuestId:samRekId1}";
+		String requestJSON = "{cpAccountId:accid2,amount:534.6,transactionRequestId:samRekId1}";
 		AtomicReference<TransactionResult> result = new AtomicReference<>(null);
 		Mockito.when(TRANSACT_SERVICE.transfer(any(), any())).thenAnswer(invocation -> {
-			result.set(convertRekuestToSuccessTransactResult(invocation.getArgument(0),invocation.getArgument(1),"TransReferId"));
+			result.set(convertRequestToSuccessTransactResult(invocation.getArgument(0),invocation.getArgument(1),"TransReferId"));
 			return result.get();
 		});
-		verifyTransferResult(route, reuestJSON, result, "origAccId1", "accid2", 534.6,"samRekId1");
+		verifyTransferResult(route, requestJSON, result, "origAccId1", "accid2", 534.6,"samRekId1");
 	}
 
 	@Ignore
@@ -132,15 +129,15 @@ public class TestRestfulTransactionService {
 		// transaction cn not be update
 	}
 	
-	private void verifyTransferResult(Route route,String reuestJSON, AtomicReference<TransactionResult> result, String origAccountId,
-			String cpAccId, double amount, String rekuestId) {
-		Request request = createMockRekuest(reuestJSON, HttpMethod.post.name(), origAccountId);
+	private void verifyTransferResult(Route route,String requestJSON, AtomicReference<TransactionResult> result, String origAccountId,
+			String cpAccId, double amount, String requestId) {
+		Request request = createMockRequest(requestJSON, HttpMethod.post.name(), origAccountId);
 		Response response = createMockResponse();
 		try {
 			String json = (String) route.handle(request, response);
 			Mockito.verify(response).type(STRING_CAPTOR.capture());
-			Mockito.verify(TRANSACT_SERVICE).transfer(TRANSFER_REKUEST_CAPTOR.capture(), ORIGINATING_CAPTOR.capture());
-			verifyTransactionRekuest(TRANSFER_REKUEST_CAPTOR, ORIGINATING_CAPTOR, origAccountId, amount, cpAccId, rekuestId);
+			Mockito.verify(TRANSACT_SERVICE).transfer(TRANSFER_REQUEST_CAPTOR.capture(), ORIGINATING_CAPTOR.capture());
+			verifyTransactionRequest(TRANSFER_REQUEST_CAPTOR, ORIGINATING_CAPTOR, origAccountId, amount, cpAccId, requestId);
 			verifyResponseType(response);
 			verifyTransactResult(JSON_SERIALIZER.getToJsonLastObject(), result.get());
 		} catch (Exception e) {

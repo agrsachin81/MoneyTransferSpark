@@ -31,15 +31,14 @@ public class GsonConversionTest {
 		String rek = "{name:sachin,mobileNumber:9876544}";
 
 		AccountRequestImpl account = gson.fromJson(rek, AccountRequestImpl.class);
-
 		assertNotNull("JSON TO OBJ CONVERSION FAILED |" + rek + "|", account);
-		assertNotNull("blance should be zero", account.getBalance());
-		assertNull("accointId must be null", account.getAccountId());
+		assertEquals(0.0, account.getBalance() ,0.00001);
+		assertNull("accountId must be null", account.getAccountId());
 	}
 
 	@Test
-	public void transactConverionTest() {
-		String rek = "{\"amount\":100.0,\"cpAccountId\":\"PA_2\",\"transactionRekuestId\":\"abcd\"}";
+	public void transactConversionTest() {
+		String rek = "{\"amount\":100.0,\"cpAccountId\":\"PA_2\",\"transactionRequestId\":\"abcd\"}";
 
 		TransactionRequestImpl transaction = gson.fromJson(rek, TransactionRequestImpl.class);
 
@@ -48,12 +47,12 @@ public class GsonConversionTest {
 		assertEquals("CounterParty is not parsed Correctly", "PA_2", transaction.getCpAccountId().get());
 		assertEquals("default type is not correct", TransactionType.DEBIT_ACCOUNT, transaction.getTransactionType());
 		String expected = "abcd".intern();
-		assertEquals("transactionId not parsed", expected, transaction.getTransactionRekuestId());
+		assertEquals("transactionId not parsed", expected, transaction.getTransactionRequestId());
 	}
 	
 	@Test
-	public void transactConverionTestDebitCash() {
-		String rek = "{\"amount\":100.0,\"transactionType\":\"debit\",\"transactionRekuestId\":\"abcd\"}";
+	public void transactConversionTestDebitCash() {
+		String rek = "{\"amount\":100.0,\"transactionType\":\"debit\",\"transactionRequestId\":\"abcd\"}";
 
 		TransactionRequestImpl transaction = gson.fromJson(rek, TransactionRequestImpl.class);
 
@@ -62,6 +61,6 @@ public class GsonConversionTest {
 		assertEquals("CounterParty is not parsed Correctly", Optional.empty(), transaction.getCpAccountId());
 		assertEquals("default type is not correct", TransactionType.DEBIT_CASH, transaction.getTransactionType());
 		String expected = "abcd".intern();
-		assertEquals("transactionId not parsed", expected, transaction.getTransactionRekuestId());
+		assertEquals("transactionId not parsed", expected, transaction.getTransactionRequestId());
 	}
 }

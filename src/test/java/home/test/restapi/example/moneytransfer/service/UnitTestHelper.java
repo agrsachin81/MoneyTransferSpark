@@ -15,17 +15,17 @@ import home.test.api.example.moneytransfer.spi.enums.StatusResponse;
 import home.test.api.example.moneytransfer.spi.enums.TransactionStatus;
 import home.test.api.example.moneytransfer.spi.interfaces.AccountRequest;
 import home.test.api.example.moneytransfer.spi.interfaces.AccountResult;
-import home.test.api.example.moneytransfer.spi.interfaces.TransactionRekuest;
+import home.test.api.example.moneytransfer.spi.interfaces.TransactionRequest;
 import home.test.api.example.moneytransfer.spi.interfaces.TransactionResult;
 import spark.Request;
 import spark.Response;
 
 public class UnitTestHelper {
 	// TODO:make variable threadlocal to ensure when tests run in parallel
-	public static ArgumentCaptor<AccountRequest> ACCOUNT_REKUEST_CAPTOR = ArgumentCaptor.forClass(AccountRequest.class);
+	public static ArgumentCaptor<AccountRequest> ACCOUNT_REQUEST_CAPTOR = ArgumentCaptor.forClass(AccountRequest.class);
 
-	public static ArgumentCaptor<TransactionRekuest> TRANSFER_REKUEST_CAPTOR = ArgumentCaptor
-			.forClass(TransactionRekuest.class);
+	public static ArgumentCaptor<TransactionRequest> TRANSFER_REQUEST_CAPTOR = ArgumentCaptor
+			.forClass(TransactionRequest.class);
 	public static ArgumentCaptor<String> ORIGINATING_CAPTOR = ArgumentCaptor.forClass(String.class);
 
 	public static ArgumentCaptor<Object> JSON_CAPTOR = ArgumentCaptor.forClass(Object.class);
@@ -45,33 +45,33 @@ public class UnitTestHelper {
 		assertEquals("type must always be application/json", true, IS_JSON_EVALUATOR.matches(STRING_CAPTOR.getValue()));
 	}
 
-	public static Request createMockRekuest(String body, String method, String... splat) {
+	public static Request createMockRequest(String body, String method, String... splat) {
 
 		// TODO:
 		// set Content-type: application/json
-		Request rekuest = Mockito.mock(Request.class);
+		Request request = Mockito.mock(Request.class);
 
-		Mockito.when(rekuest.body()).thenReturn(body);
-		Mockito.when(rekuest.requestMethod()).thenReturn(method);
-		Mockito.when(rekuest.splat()).thenReturn(splat);
+		Mockito.when(request.body()).thenReturn(body);
+		Mockito.when(request.requestMethod()).thenReturn(method);
+		Mockito.when(request.splat()).thenReturn(splat);
 
-		return rekuest;
+		return request;
 	}
 
-	public static void verifyAccounRekuest(AccountRequest rekuest, String name, String mobileNumber, double balance) {
-		assertEquals("balance is incorrect parsed", balance, rekuest.getBalance(), 0.00001);
-		assertEquals("name is incorrect parsed", name, rekuest.getName());
-		assertEquals("mobileNumber is incorrect parsed", mobileNumber, rekuest.getMobileNumber());
+	public static void verifyAccountRequest(AccountRequest request, String name, String mobileNumber, double balance) {
+		assertEquals("balance is incorrect parsed", balance, request.getBalance(), 0.00001);
+		assertEquals("name is incorrect parsed", name, request.getName());
+		assertEquals("mobileNumber is incorrect parsed", mobileNumber, request.getMobileNumber());
 	}
 
-	public static void verifyTransactionRekuest(ArgumentCaptor<TransactionRekuest> rekuestCapture,
-			ArgumentCaptor<String> originAccntRekuest, String originAccountId, double amount, String cpAccountId,String rekuestId) {
-		TransactionRekuest rekuest = rekuestCapture.getValue();
-		String origAccntIdRekuested = originAccntRekuest.getValue();
-		assertEquals("Amount is incorrect parsed", amount, rekuest.getAmount(), 0.00001);
-		assertEquals("cpAccountId is incorrect parsed", cpAccountId, rekuest.getCpAccountId().get());
-		assertEquals("orignAccountId is incorrect parsed", originAccountId, origAccntIdRekuested);
-		assertEquals("TransactionRekuestId is incorrect parsed", rekuest.getTransactionRekuestId(), rekuestId);
+	public static void verifyTransactionRequest(ArgumentCaptor<TransactionRequest> requestCapture,
+												ArgumentCaptor<String> originAccountRequest, String originAccountId, double amount, String cpAccountId, String rekuestId) {
+		TransactionRequest request = requestCapture.getValue();
+		String origAccidentRequested = originAccountRequest.getValue();
+		assertEquals("Amount is incorrect parsed", amount, request.getAmount(), 0.00001);
+		assertEquals("cpAccountId is incorrect parsed", cpAccountId, request.getCpAccountId().get());
+		assertEquals("orignAccountId is incorrect parsed", originAccountId, origAccidentRequested);
+		assertEquals("TransactionRequestId is incorrect parsed", request.getTransactionRequestId(), rekuestId);
 	}
 
 	public static void verifyAccountResult(Object json, AccountResult result) {
@@ -82,26 +82,26 @@ public class UnitTestHelper {
 		assertEquals("TransactResult does not match", result, json);
 	}
 
-	public static TransactionResult convertRekuestToSuccessTransactResult(TransactionRekuest rekuest,
-			String origAccntId, String transrefeId) {
+	public static TransactionResult convertRequestToSuccessTransactResult(TransactionRequest request,
+																		  String origAccntId, String transrefeId) {
 
-		assertNotNull(rekuest);
+		assertNotNull(request);
 		TransactionResult result = mock(TransactionResult.class);
 		when(result.getAccountId()).thenReturn(origAccntId);
-		when(result.getAmount()).thenReturn(rekuest.getAmount());
-		when(result.getCashReferenceId()).thenReturn(rekuest.getCashReferenceId());
+		when(result.getAmount()).thenReturn(request.getAmount());
+		when(result.getCashReferenceId()).thenReturn(request.getCashReferenceId());
 		when(result.getStatus()).thenReturn(StatusResponse.SUCCESS);
 		when(result.getTransactionStatus()).thenReturn(TransactionStatus.DONE);
-		when(result.getCpAccountId()).thenReturn(rekuest.getCpAccountId());
-		when(result.getTransactionRekuestId()).thenReturn(rekuest.getTransactionRekuestId());
+		when(result.getCpAccountId()).thenReturn(request.getCpAccountId());
+		when(result.getTransactionRekuestId()).thenReturn(request.getTransactionRequestId());
 		when(result.getTransactionReferenceId()).thenReturn(transrefeId);
 		when(result.getTimeStamp()).thenReturn(System.currentTimeMillis());
 		when(result.getMessage()).thenReturn("Transaction Successfull");
 		return result;
 	}
 	
-	public static TransactionResult convertRekuestToFailedTransactResult(TransactionRekuest rekuest,
-			String origAccntId, String transrefeId) {
+	public static TransactionResult convertRequestToFailedTransactResult(TransactionRequest rekuest,
+																		 String origAccntId, String transrefeId) {
 
 		assertNotNull(rekuest);
 		TransactionResult result = mock(TransactionResult.class);
@@ -111,34 +111,34 @@ public class UnitTestHelper {
 		when(result.getStatus()).thenReturn(StatusResponse.ERROR);
 		when(result.getTransactionStatus()).thenReturn(TransactionStatus.ABORTED);
 		when(result.getCpAccountId()).thenReturn(rekuest.getCpAccountId());
-		when(result.getTransactionRekuestId()).thenReturn(rekuest.getTransactionRekuestId());
+		when(result.getTransactionRekuestId()).thenReturn(rekuest.getTransactionRequestId());
 		when(result.getTransactionReferenceId()).thenReturn(transrefeId);
 		when(result.getTimeStamp()).thenReturn(System.currentTimeMillis());
 		when(result.getMessage()).thenReturn("Transaction unsuccessful");
 		return result;
 	}
 
-	public static AccountResult convertRekuestToSuccessAccountResult(String accId, AccountRequest rekuest) {
+	public static AccountResult convertRequestToSuccessAccountResult(String accId, AccountRequest request) {
 
-		assertNotNull(rekuest);
+		assertNotNull(request);
 		AccountResult result = mock(AccountResult.class);
 		when(result.getAccountId()).thenReturn(accId);
-		when(result.getName()).thenReturn(rekuest.getName());
-		when(result.getMobileNumber()).thenReturn(rekuest.getMobileNumber());
+		when(result.getName()).thenReturn(request.getName());
+		when(result.getMobileNumber()).thenReturn(request.getMobileNumber());
 		when(result.getStatus()).thenReturn(StatusResponse.SUCCESS);
 		when(result.getAccountStatus()).thenReturn(AccountStatus.CREATED);
-		when(result.getBalance()).thenReturn(rekuest.getBalance());
+		when(result.getBalance()).thenReturn(request.getBalance());
 		when(result.getMessage()).thenReturn("Account Created Successfully");
 		return result;
 	}
 
-	public static AccountResult convertRekuestToFailedAccountResult(AccountRequest rekuest) {
+	public static AccountResult convertRekuestToFailedAccountResult(AccountRequest request) {
 
-		assertNotNull(rekuest);
+		assertNotNull(request);
 		AccountResult result = mock(AccountResult.class);
 		when(result.getAccountId()).thenReturn(null);
-		when(result.getName()).thenReturn(rekuest.getName());
-		when(result.getMobileNumber()).thenReturn(rekuest.getMobileNumber());
+		when(result.getName()).thenReturn(request.getName());
+		when(result.getMobileNumber()).thenReturn(request.getMobileNumber());
 		when(result.getStatus()).thenReturn(StatusResponse.ERROR);
 		when(result.getAccountStatus()).thenReturn(AccountStatus.UNKNOWN);
 		when(result.getBalance()).thenReturn(0.0);

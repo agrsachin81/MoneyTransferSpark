@@ -2,13 +2,13 @@
 package home.test.restapi.example.moneytransfer.service;
 
 import static home.test.restapi.example.moneytransfer.api.RestfulAccountService.PATH_ACCOUNT;
-import static home.test.restapi.example.moneytransfer.service.UnitTestHelper.ACCOUNT_REKUEST_CAPTOR;
+import static home.test.restapi.example.moneytransfer.service.UnitTestHelper.ACCOUNT_REQUEST_CAPTOR;
 import static home.test.restapi.example.moneytransfer.service.UnitTestHelper.STRING_CAPTOR;
 import static home.test.restapi.example.moneytransfer.service.UnitTestHelper.convertRekuestToFailedAccountResult;
-import static home.test.restapi.example.moneytransfer.service.UnitTestHelper.convertRekuestToSuccessAccountResult;
-import static home.test.restapi.example.moneytransfer.service.UnitTestHelper.createMockRekuest;
+import static home.test.restapi.example.moneytransfer.service.UnitTestHelper.convertRequestToSuccessAccountResult;
+import static home.test.restapi.example.moneytransfer.service.UnitTestHelper.createMockRequest;
 import static home.test.restapi.example.moneytransfer.service.UnitTestHelper.createMockResponse;
-import static home.test.restapi.example.moneytransfer.service.UnitTestHelper.verifyAccounRekuest;
+import static home.test.restapi.example.moneytransfer.service.UnitTestHelper.verifyAccountRequest;
 import static home.test.restapi.example.moneytransfer.service.UnitTestHelper.verifyAccountResult;
 import static home.test.restapi.example.moneytransfer.service.UnitTestHelper.verifyResponseType;
 import static org.junit.Assert.assertNotNull;
@@ -67,7 +67,7 @@ public class TestRestfulAccountService {
 		String reuestJSON = "{name:john,mobileNumber:12345567908}";
 		AtomicReference<AccountResult> result = new AtomicReference<>(null);
 		Mockito.when(ACCOUNT_SERVICE.addAccount(any())).thenAnswer(invocation -> {
-			result.set(convertRekuestToSuccessAccountResult("someAccntId", invocation.getArgument(0)));
+			result.set(convertRequestToSuccessAccountResult("someAccntId", invocation.getArgument(0)));
 			return result.get();
 		});
 		verifyAddAccountResult(reuestJSON, result, "john", "12345567908", 0.0, route);
@@ -90,13 +90,13 @@ public class TestRestfulAccountService {
 	private void verifyAddAccountResult(String reuestJSON, AtomicReference<AccountResult> result, String name,
 			String mobileNumber, double balance, Route route) {
 		
-		Request request = createMockRekuest(reuestJSON, HttpMethod.post.name());
+		Request request = createMockRequest(reuestJSON, HttpMethod.post.name());
 		Response response = createMockResponse();
 		try {
 			String json = (String) route.handle(request, response);
 			Mockito.verify(response).type(STRING_CAPTOR.capture());
-			Mockito.verify(ACCOUNT_SERVICE).addAccount(ACCOUNT_REKUEST_CAPTOR.capture());
-			verifyAccounRekuest(ACCOUNT_REKUEST_CAPTOR.getValue(), name, mobileNumber, balance);
+			Mockito.verify(ACCOUNT_SERVICE).addAccount(ACCOUNT_REQUEST_CAPTOR.capture());
+			verifyAccountRequest(ACCOUNT_REQUEST_CAPTOR.getValue(), name, mobileNumber, balance);
 			verifyResponseType(response);
 			verifyAccountResult(JSON_SERIALIZER.getToJsonLastObject(), result.get());
 		} catch (Exception e) {
